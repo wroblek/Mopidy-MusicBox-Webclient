@@ -286,10 +286,7 @@ function showArtist(nwuri) {
 //TODO cache
     $('#h_artistname').html('');
     showLoading(true);
-    mopidy.library.lookup(nwuri).then(function(resultArr) {
-        resultArr.uri = nwuri;
-        processArtistResults(resultArr);
-    }, console.error);
+    mopidy.library.lookup(nwuri).then(processArtistResults, console.error);
     switchContent('artists', nwuri);
     scrollToTop();
     setSongInfo();
@@ -312,19 +309,13 @@ function showAlbum(uri) {
         $('#coverpopupalbumname').html(albumname);
         $('#coverpopupartist').html(artistname);
         showLoading(false);
-        mopidy.library.lookup(uri).then(function(resultArr) {
-            resultArr.uri = uri;
-            processAlbumResults(resultArr);
-        }, console.error);
+        mopidy.library.lookup(uri).then(processAlbumResults, console.error);
 //        getCover(pl, '#albumviewcover, #coverpopupimage', 'extralarge');
     } else {
         showLoading(true);
         $('#h_albumname').html('');
         $('#h_albumartist').html('');
-        mopidy.library.lookup(uri).then(function(resultArr) {
-            resultArr.uri = uri;
-            processAlbumResults(resultArr);
-        }, console.error);
+        mopidy.library.lookup(uri).then(processAlbumResults, console.error);
     }
     //show page
     switchContent('albums', uri);
