@@ -131,13 +131,12 @@ function playTrack(addtoqueue) {
 }
 
 /***
- * Plays a Track given by an URI
- * @param uri, playlisturi
+ * Plays a Track given by an URI from the given playlist URI.
+ * @param track_uri, playlist_uri
  * @returns {boolean}
  */
-function playTrackByUri(uri, playlisturi){
-//    console.log('playuri');
-    //stop directly, for user feedback
+function playTrackByUri(track_uri, playlist_uri){
+    // Stop directly, for user feedback
     mopidy.playback.stop(true);
     mopidy.tracklist.clear();
 
@@ -148,27 +147,25 @@ function playTrackByUri(uri, playlisturi){
 
     toast('Loading...');
 
-//    var trackslist = new Array();
-//    var track, tracksbefore, tracksafter;
-    var tracks = getTracksFromUri(playlisturi);
-//    console.log(tracks);
-//find track that was selected
-    for (var selected = 0; selected < tracks.length; selected++) {
-        if (tracks[selected].uri == uri) {
-            break;
+    var func;
+    if (playlist_uri == 'trackresultscache') {
+        var tracks = getTracksFromUri(playlist_uri);
+        func = mopidy.tracklist.add(tracks);
+    } else {
+        func = mopidy.tracklist.add(null, null, playlist_uri);
+    }
+    func.then(
+        function(tltracks) {
+            // Find track that was selected
+            for (var selected = 0; selected < tltracks.length; selected++) {
+                if (tltracks[selected].track.uri == track_uri) {
+                    mopidy.playback.play(tltracks[selected]);
+                    return;
+                }
+            }
+            console.log('Failed to play selected track ', track_uri);
         }
-    }
-
-//    mopidy.tracklist.add(null, null, uri); //tracks);
-    mopidy.tracklist.add(tracks);
-
-    mopidy.playback.stop();
-    for (var i = 0; i <= selected; i++) {
-        mopidy.playback.next();
-    }
-
-    mopidy.playback.play();
-
+    ).then(getCurrentPlaylist()); // Updates some state
     return false;
 }
 
@@ -189,23 +186,15 @@ function playTrackQueueByUri(uri, playlisturi){
     $('#popupQueue').popup('close');
     toast('Loading...');
 
-    var track;
-    for (var i = 0; i < currentplaylist.length; i++) {
-        if (currentplaylist[i].uri == uri) {
-            track = i + 1;
-            break;
+    mopidy.tracklist.filter({'uri': [uri]}).then(
+        function(tltracks) {
+            if (tltracks.length > 0) {
+                mopidy.playback.play(tltracks[0]);
+                return;
+            }
+            console.log('Failed to play selected track ', uri);
         }
-    }
-    mopidy.playback.stop();
-    for (var i = 0; i < track; i++) {
-        mopidy.playback.next();
-    }
-
-//    console.log (currentplaylist[track]);
-//    mopidy.playback.changeTrack(currentplaylist[track]);
-
-    mopidy.playback.play();
-    //console.log(track, currentplaylist[track]);
+    );
     return false;
 }
 
