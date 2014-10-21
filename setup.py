@@ -12,9 +12,9 @@ def get_version(filename):
 
 
 setup(
-    name='Mopidy-MusicBox-Webclient',
-    version=get_version('mopidy_musicbox_webclient/__init__.py'),
-    url='https://github.com/woutervanwijk/mopidy-musicbox-webclient',
+    name='Mopidy-MusicBox-Webclient-KrzyWro',
+    version=get_version('mopidy_musicbox/__init__.py'),
+    url='https://github.com/wroblek/mopidy-musicbox-webclient',
     license='GNU General Public License v3 (GPLv3)',
     author='Wouter van Wijk',
     author_email='woutervanwijk@gmail.com',
@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
         'mopidy.ext': [
-            'musicbox_webclient = mopidy_musicbox_webclient:MusicBoxExtension',
+            'musicbox = mopidy_musicbox:MusicBoxExtension',
         ],
     },
     classifiers=[
